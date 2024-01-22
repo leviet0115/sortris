@@ -27,6 +27,11 @@ gameState.bin = [
   { type: "other", color: "red" },
 ];
 
+gameState.scoring = {
+  reward: 50,
+  punishment: -25,
+};
+
 gameState.trashes = [
   {
     key: "american-cheese",
