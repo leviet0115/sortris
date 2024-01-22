@@ -13,9 +13,14 @@ class GameScene extends Phaser.Scene {
     this.load.image("recyclable", "./resources/bins/orange-bin.png");
   }
 
-  create() {
+  init() {
     this.records = [];
     this.isGamePaused = false;
+    this.score = 0;
+    this.lives = 3;
+  }
+
+  create() {
     //create trash
     const trashes = this.physics.add.group();
     this.selectedTrash = this.getRandomElement(gameState.trashes);
@@ -28,14 +33,12 @@ class GameScene extends Phaser.Scene {
     bins.create(150 + 250 * 2, 575, "recyclable");
 
     //create score text
-    this.score = 0;
     this.scoreText = this.add.text(30, 30, `Score: ${this.score}`, {
       color: "#fff",
       fontSize: "30px",
     });
 
     //display live
-    this.lives = 3;
     this.liveText = this.add.text(30, 60, `Lives: ${this.lives}`, {
       color: "#fff",
       fontSize: "30px",
@@ -48,10 +51,10 @@ class GameScene extends Phaser.Scene {
 
         //right bin
         if (bin.texture.key === this.selectedTrash.type) {
-          this.score += 50;
+          this.score += gameState.scoring.reward;
           this.scoreText.setText(`Score: ${this.score}`);
         } /*wrong bin*/ else {
-          this.score -= 20;
+          this.score += gameState.scoring.punishment;
           this.scoreText.setText(`Score: ${this.score}`);
           this.lives -= 1;
           //console.log("sorting rules: -1 live");
@@ -78,7 +81,6 @@ class GameScene extends Phaser.Scene {
 
     if (this.isGamePaused === true) {
       if (cursors.space.isDown) {
-        console.log("you pressed down and i restarted");
         this.scene.restart();
       }
       return;
