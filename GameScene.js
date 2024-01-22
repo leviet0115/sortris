@@ -16,9 +16,12 @@ class GameScene extends Phaser.Scene {
   init() {
     this.records = [];
     this.isGameLost = false;
+    this.isGamePaused = false;
     this.score = 0;
     this.lives = 3;
     this.currentRecord = {};
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
   }
 
   create() {
@@ -80,25 +83,46 @@ class GameScene extends Phaser.Scene {
   }
 
   update() {
-    const cursors = this.input.keyboard.createCursorKeys();
-
-    //handle gamePaused
-    if (this.isGameLost === true) {
-      if (cursors.space.isDown) {
+    //handle gameLost
+    if (this.isGameLost) {
+      if (this.cursors.space.isDown) {
         this.scene.restart();
       }
       return;
     }
 
+    //handle game exit - back to menu
+    if (this.isGamePaused) {
+      if (this.cursors.space.isDown) {
+        this.scene.stop();
+        this.scene.start("StartScene");
+      }
+    }
+
     //keyboard controls
-    if (cursors.left.isDown) {
+    if (this.cursors.left.isDown) {
       this.trash.x -= 10;
     }
-    if (cursors.right.isDown) {
+    if (this.cursors.right.isDown) {
       this.trash.x += 10;
     }
-    if (cursors.down.isDown) {
+    if (this.cursors.down.isDown) {
       this.trash.y += 10;
+    }
+    if (this.esc.isDown) {
+      this.physics.pause();
+      this.isGamePaused = true;
+
+      this.modalBg = this.add
+        .rectangle(400, 300, 400, 300, 0x000000)
+        .setStrokeStyle(2, 0x00ff00, 1);
+
+      this.modalTitle = this.add
+        .text(400, 300, "Press space again to quit", {
+          fill: "#fff",
+          fontSize: "24px",
+        })
+        .setOrigin(0.5, 0.5);
     }
 
     //losing game
