@@ -15,16 +15,19 @@ class GameScene extends Phaser.Scene {
 
   init() {
     this.records = [];
-    this.isGamePaused = false;
+    this.isGameLost = false;
     this.score = 0;
     this.lives = 3;
+    this.currentRecord = {};
   }
 
   create() {
     //create trash
     const trashes = this.physics.add.group();
     this.selectedTrash = this.getRandomElement(gameState.trashes);
+    this.currentRecord["trash"] = this.selectedTrash;
     this.trash = trashes.create(400, 0, this.selectedTrash.key).setScale(2);
+    this.currentRecord["createdAt"] = Date.now();
 
     //create bin
     const bins = this.physics.add.staticGroup();
@@ -48,6 +51,7 @@ class GameScene extends Phaser.Scene {
     this.physics.add.collider(trashes, bins, (trashObj, bin) => {
       {
         trashObj.destroy();
+        this.currentRecord["sortedAt"] = Date.now();
 
         //right bin
         if (bin.texture.key === this.selectedTrash.type) {
@@ -61,17 +65,16 @@ class GameScene extends Phaser.Scene {
           this.liveText.setText(`Lives: ${this.lives}`);
         }
         //save moves to record
-        this.currentRecord = {
-          selectedTrash: this.selectedTrash,
-          sortedAs: bin.texture.key,
-        };
+        this.currentRecord["sortedAs"] = bin.texture.key;
         this.records.push(this.currentRecord);
         this.currentRecord = {};
-        //console.log(this.records, "isPause:" + this.isGamePaused);
+        //console.log(this.records, "isPause:" + this.isGameLost);
 
         //create another trash
         this.selectedTrash = this.getRandomElement(gameState.trashes);
+        this.currentRecord["trash"] = this.selectedTrash;
         this.trash = trashes.create(400, 0, this.selectedTrash.key).setScale(2);
+        this.currentRecord["createdAt"] = Date.now();
       }
     });
   }
@@ -79,7 +82,8 @@ class GameScene extends Phaser.Scene {
   update() {
     const cursors = this.input.keyboard.createCursorKeys();
 
-    if (this.isGamePaused === true) {
+    //handle gamePaused
+    if (this.isGameLost === true) {
       if (cursors.space.isDown) {
         this.scene.restart();
       }
@@ -101,13 +105,14 @@ class GameScene extends Phaser.Scene {
     if (this.lives === 0) {
       //console.log("looping losing game");
       this.physics.pause();
-      this.isGamePaused = true;
+      this.isGameLost = true;
       //console.log("losing game logic pauses the game");
       this.add.text(50, 250, `Game over\nPress space to restart`, {
         color: "#fff",
         fontSize: "24px",
       });
       console.log(this.records);
+      gameState.history.push(this.records);
     }
   }
 
