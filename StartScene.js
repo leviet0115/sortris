@@ -15,11 +15,8 @@ class StartScene extends Phaser.Scene {
     // Display menu items
     this.logo = this.add.image(400, 200, "logo");
     this.menuItems.forEach((item, index) => {
-      const text = this.add.text(
-        300,
-        this.logo.y + this.logo.height + index * 40,
-        item,
-        {
+      const text = this.add
+        .text(400, this.logo.y + 100 + index * 40, item, {
           fontSize: "24px",
           fill: index === this.selectedItemIndex ? "#0f0" : "#fff",
           padding: {
@@ -28,10 +25,18 @@ class StartScene extends Phaser.Scene {
             top: 5,
             bottom: 5,
           },
-        }
-      );
+        })
+        .setOrigin(0.5);
       this.menuTexts.push(text);
     });
+    this.add
+      .text(
+        400,
+        550,
+        "Keyboard-only: use \u2190, \u2191, \u2192, \u2193 and space to navigate",
+        { fontSize: "20px" }
+      )
+      .setOrigin(0.5);
   }
 
   update() {
