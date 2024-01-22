@@ -7,19 +7,29 @@ class StartScene extends Phaser.Scene {
     this.menuTexts = [];
   }
 
+  preload() {
+    this.load.image("logo", "./resources/logo.png");
+  }
+
   create() {
     // Display menu items
+    this.logo = this.add.image(400, 200, "logo");
     this.menuItems.forEach((item, index) => {
-      const text = this.add.text(200, 200 + index * 40, item, {
-        fontSize: "24px",
-        fill: index === this.selectedItemIndex ? "#0f0" : "#fff",
-        padding: {
-          left: 10,
-          right: 10,
-          top: 5,
-          bottom: 5,
-        },
-      });
+      const text = this.add.text(
+        300,
+        this.logo.y + this.logo.height + index * 40,
+        item,
+        {
+          fontSize: "24px",
+          fill: index === this.selectedItemIndex ? "#0f0" : "#fff",
+          padding: {
+            left: 10,
+            right: 10,
+            top: 5,
+            bottom: 5,
+          },
+        }
+      );
       this.menuTexts.push(text);
     });
   }
