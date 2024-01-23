@@ -2,7 +2,7 @@ class StartScene extends Phaser.Scene {
   constructor() {
     super({ key: "StartScene" });
 
-    this.menuItems = ["Start Game", "Options", "How to play"];
+    this.menuItems = ["Start Game", "How to play", "Admin config"];
     this.selectedItemIndex = 0;
     this.menuTexts = [];
   }
@@ -65,9 +65,10 @@ class StartScene extends Phaser.Scene {
     if (cursors.space.isDown && !this.spaceKeyIsPressed) {
       this.spaceKeyIsPressed = true;
       this.selectedItemIndex === 0 && this.scene.start("GameScene");
-      this.selectedItemIndex === 2 &&
+      this.selectedItemIndex === 1 &&
         this.scene.pause("StartScene") &&
         this.scene.launch("TutorialScene");
+      this.selectedItemIndex === 2 && this.scene.start("InputScene");
     }
 
     //reset press flags
