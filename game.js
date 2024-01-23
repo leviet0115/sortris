@@ -2,7 +2,7 @@ var config = {
   type: Phaser.AUTO,
   width: 800,
   height: 600,
-  scene: [GameScene, StartScene, TutorialScene],
+  scene: [InputScene, StartScene, GameScene, TutorialScene],
   physics: {
     default: "arcade",
     arcade: {
