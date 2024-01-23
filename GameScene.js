@@ -11,6 +11,7 @@ class GameScene extends Phaser.Scene {
     this.load.image("other", "./resources/bins/red-bin.png");
     this.load.image("organic", "./resources/bins/green-bin.png");
     this.load.image("recyclable", "./resources/bins/orange-bin.png");
+    this.load.image("logo", "./resources/logo.png");
   }
 
   init() {
@@ -25,6 +26,7 @@ class GameScene extends Phaser.Scene {
   }
 
   create() {
+    this.add.image(650, 60, "logo").setScale(0.5);
     //create trash
     const trashes = this.physics.add.group();
     this.selectedTrash = this.getRandomElement(gameState.trashes);

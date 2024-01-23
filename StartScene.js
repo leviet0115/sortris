@@ -33,7 +33,7 @@ class StartScene extends Phaser.Scene {
       .text(
         400,
         550,
-        "Keyboard-only: use \u2190, \u2191, \u2192, \u2193 and space to navigate",
+        "Keyboard-only: use \u2190, \u2191, \u2192, \u2193, space, esc",
         { fontSize: "20px" }
       )
       .setOrigin(0.5);

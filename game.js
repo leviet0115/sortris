@@ -32,6 +32,8 @@ gameState.scoring = {
   punishment: -25,
 };
 
+gameState.history = [];
+
 gameState.trashes = [
   {
     key: "american-cheese",

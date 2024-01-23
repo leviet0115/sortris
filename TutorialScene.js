@@ -13,7 +13,7 @@ class TutorialScene extends Phaser.Scene {
 
   create() {
     this.background = this.add
-      .rectangle(400, 300, 400, 300, 0x000000)
+      .rectangle(400, 300, 500, 400, 0x000000)
       .setStrokeStyle(2, 0x00ff00, 1);
 
     const titleText = this.add
