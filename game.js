@@ -1,8 +1,9 @@
 var config = {
   type: Phaser.AUTO,
+  parent: "game-container",
   width: 800,
   height: 600,
-  scene: [StartScene, GameScene, TutorialScene, InputScene],
+  scene: [StartScene, GameScene, TutorialScene, InputScene, ConfigScene],
   physics: {
     default: "arcade",
     arcade: {
@@ -28,8 +29,14 @@ gameState.bin = [
 ];
 
 gameState.scoring = {
-  reward: 50,
-  punishment: -25,
+  reward: {
+    description: "Reward per correct answer",
+    amount: 50,
+  },
+  deduction: {
+    description: "Deduction per incorrect answer",
+    amount: -25,
+  },
 };
 
 gameState.history = [];

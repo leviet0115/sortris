@@ -57,9 +57,7 @@ class InputScene extends Phaser.Scene {
         text.setFill(this.isPinCorrect ? "#0f0" : "red")
       );
       if (this.isPinCorrect) {
-        // setTimeout(() => this.scene.start("GameScene"), 500);
-        let userInput = prompt("Please enter your input:");
-        console.log("You entered:", userInput);
+        setTimeout(() => this.scene.start("ConfigScene"), 500);
       } else {
         this.cameras.main.shake(100, 0.005);
         setTimeout(() => {

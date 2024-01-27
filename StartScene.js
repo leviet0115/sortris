@@ -1,14 +1,16 @@
 class StartScene extends Phaser.Scene {
   constructor() {
     super({ key: "StartScene" });
-
-    this.menuItems = ["Start Game", "How to play", "Admin config"];
-    this.selectedItemIndex = 0;
-    this.menuTexts = [];
   }
 
   preload() {
     this.load.image("logo", "./resources/logo.png");
+  }
+
+  init() {
+    this.menuItems = ["Start Game", "How to play", "Admin config"];
+    this.selectedItemIndex = 0;
+    this.menuTexts = [];
   }
 
   create() {
@@ -29,6 +31,7 @@ class StartScene extends Phaser.Scene {
         .setOrigin(0.5);
       this.menuTexts.push(text);
     });
+
     this.add
       .text(
         400,
@@ -37,13 +40,13 @@ class StartScene extends Phaser.Scene {
         { fontSize: "20px" }
       )
       .setOrigin(0.5);
+
+    this.cursors = this.input.keyboard.createCursorKeys();
   }
 
   update() {
-    const cursors = this.input.keyboard.createCursorKeys();
-
     //if press down, the cursor move to a lower option
-    if (cursors.down.isDown && !this.downKeyIsPressed) {
+    if (this.cursors.down.isDown && !this.downKeyIsPressed) {
       this.selectedItemIndex =
         (this.selectedItemIndex + 1) % this.menuItems.length;
       console.log("pressing down", this.selectedItemIndex);
@@ -52,7 +55,7 @@ class StartScene extends Phaser.Scene {
     }
 
     //if press up, the cursor move to an upper option
-    if (cursors.up.isDown && !this.upKeyIsPressed) {
+    if (this.cursors.up.isDown && !this.upKeyIsPressed) {
       this.selectedItemIndex =
         (this.selectedItemIndex - 1 + this.menuItems.length) %
         this.menuItems.length;
@@ -62,7 +65,7 @@ class StartScene extends Phaser.Scene {
     }
 
     //if press space, trigger the relevant event
-    if (cursors.space.isDown && !this.spaceKeyIsPressed) {
+    if (this.cursors.space.isDown && !this.spaceKeyIsPressed) {
       this.spaceKeyIsPressed = true;
       this.selectedItemIndex === 0 && this.scene.start("GameScene");
       this.selectedItemIndex === 1 &&
@@ -72,21 +75,22 @@ class StartScene extends Phaser.Scene {
     }
 
     //reset press flags
-    if (cursors.down.isUp) {
+    if (this.cursors.down.isUp) {
       this.downKeyIsPressed = false;
     }
 
-    if (cursors.up.isUp) {
+    if (this.cursors.up.isUp) {
       this.upKeyIsPressed = false;
     }
 
-    if (cursors.space.isUp) {
+    if (this.cursors.space.isUp) {
       this.spaceKeyIsPressed = false;
     }
   }
 
   updateMenu() {
     this.menuTexts.forEach((text, index) => {
+      //console.log(text.text, this.selectedItemIndex);
       text.setFill(index === this.selectedItemIndex ? "#0f0" : "#fff");
     });
   }

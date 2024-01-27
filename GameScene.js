@@ -60,10 +60,10 @@ class GameScene extends Phaser.Scene {
 
         //right bin
         if (bin.texture.key === this.selectedTrash.type) {
-          this.score += gameState.scoring.reward;
+          this.score += gameState.scoring.reward.amount;
           this.scoreText.setText(`Score: ${this.score}`);
         } /*wrong bin*/ else {
-          this.score += gameState.scoring.punishment;
+          this.score += gameState.scoring.deduction.amount;
           this.scoreText.setText(`Score: ${this.score}`);
           this.lives -= 1;
           //console.log("sorting rules: -1 live");
