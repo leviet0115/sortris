@@ -97,6 +97,12 @@ class GameScene extends Phaser.Scene {
         this.scene.stop();
         this.scene.start("StartScene");
       }
+      if (this.esc.isDown) {
+        console.log("esc is down");
+        this.modalBg.destroy();
+        this.modalTitle.destroy();
+        this.scene.resume("GameScene");
+      }
     }
 
     //keyboard controls
