@@ -3,7 +3,14 @@ var config = {
   parent: "game-container",
   width: 800,
   height: 600,
-  scene: [StartScene, GameScene, TutorialScene, InputScene, ConfigScene],
+  scene: [
+    StartScene,
+    RecordScene,
+    GameScene,
+    TutorialScene,
+    InputScene,
+    ConfigScene,
+  ],
   physics: {
     default: "arcade",
     arcade: {
@@ -39,7 +46,120 @@ gameState.scoring = {
   },
 };
 
-gameState.history = [];
+gameState.history = [
+  [
+    {
+      trash: {
+        key: "aluminum-foil",
+        img: "aluminum_foil.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378510615,
+      sortedAt: 1706378512613,
+      sortedAs: "other",
+    },
+    {
+      trash: {
+        key: "ball-pen",
+        img: "ball_pen.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378512614,
+      sortedAt: 1706378514475,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "bandage-box",
+        img: "bandage_box.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378514476,
+      sortedAt: 1706378516342,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "aluminum-foild",
+        img: "aluminum_foil.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378516344,
+      sortedAt: 1706378518411,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "aluminum-foil",
+        img: "aluminum_foil.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378510615,
+      sortedAt: 1706378512613,
+      sortedAs: "other",
+    },
+    {
+      trash: {
+        key: "ball-pen",
+        img: "ball_pen.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378512614,
+      sortedAt: 1706378514475,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "bandage-box",
+        img: "bandage_box.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378514476,
+      sortedAt: 1706378516342,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "aluminum-foild",
+        img: "aluminum_foil.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378516344,
+      sortedAt: 1706378518411,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "aluminum-foil",
+        img: "aluminum_foil.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378510615,
+      sortedAt: 1706378512613,
+      sortedAs: "other",
+    },
+    {
+      trash: {
+        key: "ball-pen",
+        img: "ball_pen.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378512614,
+      sortedAt: 1706378514475,
+      sortedAs: "recyclable",
+    },
+    {
+      trash: {
+        key: "bandage-box",
+        img: "bandage_box.png",
+        type: "recyclable",
+      },
+      createdAt: 1706378514476,
+      sortedAt: 1706378516342,
+      sortedAs: "recyclable",
+    },
+  ],
+];
 
 gameState.trashes = [
   {

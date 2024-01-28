@@ -27,7 +27,7 @@ class RecordScene extends Phaser.Scene {
     //paging
     this.pages = [];
     this.currentPage = 0;
-    this.maxPageLength = 8;
+    this.maxPageLength = 6;
 
     let totalScore = 0;
 
@@ -37,6 +37,7 @@ class RecordScene extends Phaser.Scene {
       let trashImages = [];
       let catTexts = [];
       let scoreTexts = [];
+      let dotsDividers = [];
 
       page.forEach((record, index) => {
         //console.log(page);
@@ -83,9 +84,10 @@ class RecordScene extends Phaser.Scene {
         let dotsDivider = this.add
           .text(lastLeft.width + lastLeft.x + 18, lastLeft.y, dots, textStyle)
           .setOrigin(0, 0.5);
+        dotsDividers.push(dotsDivider);
       });
 
-      let pageTexts = { trashImages, catTexts, scoreTexts };
+      let pageTexts = { trashImages, catTexts, scoreTexts, dotsDividers };
       this.pages.push(pageTexts);
     }
 
@@ -102,10 +104,12 @@ class RecordScene extends Phaser.Scene {
       textStyle
     );
 
+    this.add.text(200, 450, `Press space to restart`);
+
     this.pageNumber = this.add.text(
       background.width,
-      470,
-      `Page ${this.currentPage + 1}/${this.pages.length}`
+      450,
+      `\u2190 Page ${this.currentPage + 1}/${this.pages.length} \u2192`
     );
 
     //display only currentPage
@@ -130,7 +134,7 @@ class RecordScene extends Phaser.Scene {
 
     if (this.cursors.space.isDown && !this.spaceKeyIsPressed) {
       this.spaceKeyIsPressed = true;
-      this.scene.stop("RecordScene");
+      this.scene.stop();
       this.scene.resume("GameScene", { isGameLost: true });
     }
 
@@ -152,7 +156,7 @@ class RecordScene extends Phaser.Scene {
     Object.values(page).forEach((pageTexts) => {
       //(2, pageTexts);
       pageTexts.forEach((text) => {
-        console.log(3, text);
+        //console.log(3, text);
         text.setVisible(visibility);
       });
       //console.log("4, set all ", visibility);
@@ -167,7 +171,7 @@ class RecordScene extends Phaser.Scene {
       this.pages.length - 1
     );
     this.pageNumber.setText(
-      `Page ${this.currentPage + 1}/${this.pages.length}`
+      `\u2190 Page ${this.currentPage + 1}/${this.pages.length} \u2192`
     );
     this.pages.forEach((page, index) => {
       // console.log(1, page);

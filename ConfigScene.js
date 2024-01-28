@@ -95,6 +95,8 @@ class ConfigScene extends Phaser.Scene {
     }
 
     if (this.escKey.isDown) {
+      this.consoleInput.value = "";
+      this.consoleDiv.style.display = "none";
       this.scene.stop("ConfigScene");
       this.scene.start("StartScene");
     }

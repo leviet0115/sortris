@@ -14,9 +14,9 @@ class GameScene extends Phaser.Scene {
     this.load.image("logo", "./resources/logo.png");
   }
 
-  init() {
+  init(data) {
     this.records = [];
-    this.isGameLost = false;
+    this.isGameLost = data.isGameLost || false;
     this.isGamePaused = false;
     this.score = 0;
     this.lives = 3;
@@ -87,10 +87,8 @@ class GameScene extends Phaser.Scene {
   update() {
     //handle gameLost
     if (this.isGameLost) {
-      if (this.cursors.space.isDown) {
-        this.scene.restart();
-      }
-      return;
+      this.lives = 3;
+      this.scene.restart();
     }
 
     //handle game exit - back to menu
@@ -132,11 +130,13 @@ class GameScene extends Phaser.Scene {
       //console.log("looping losing game");
       this.physics.pause();
       this.isGameLost = true;
+      this.scene.pause();
+      this.scene.launch("RecordScene", { records: this.records });
       //console.log("losing game logic pauses the game");
-      this.add.text(50, 250, `Game over\nPress space to restart`, {
+      /*this.add.text(50, 250, `Game over\nPress space to restart`, {
         color: "#fff",
         fontSize: "24px",
-      });
+      });*/
       console.log(this.records);
       gameState.history.push(this.records);
     }
