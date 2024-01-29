@@ -8,10 +8,9 @@ class GameScene extends Phaser.Scene {
     for (let obj of gameState.trashes) {
       this.load.image(obj.key, trashFolder + obj.img);
     }
-    this.load.image("other", "./resources/bins/red-bin.png");
-    this.load.image("organic", "./resources/bins/green-bin.png");
-    this.load.image("recyclable", "./resources/bins/orange-bin.png");
-    this.load.image("logo", "./resources/logo.png");
+
+    console.log(gameState.bins);
+    gameState.bins.forEach((bin) => this.load.image(bin.key, bin.url));
   }
 
   init(data) {
@@ -36,11 +35,17 @@ class GameScene extends Phaser.Scene {
 
     //create bin
     const bins = this.physics.add.staticGroup();
-    bins.create(150, 575, "other");
-    bins.create(150 + 250, 575, "organic");
-    bins.create(150 + 250 * 2, 575, "recyclable");
+    gameState.bins.forEach((bin, index) => {
+      let binObject = bins.create(150 + 250 * index, 575, bin.key);
+      let binLabel = this.add
+        .text(binObject.x, binObject.y, binObject.texture.key, {
+          fill: "#black",
+          fontSize: "16px",
+        })
+        .setOrigin(0.5, 0.5);
+    });
 
-    //create score text
+    //display score
     this.scoreText = this.add.text(30, 30, `Score: ${this.score}`, {
       color: "#fff",
       fontSize: "30px",
