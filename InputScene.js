@@ -26,6 +26,9 @@ class InputScene extends Phaser.Scene {
 
     this.currentInputIndex = 0;
     this.input.keyboard.on("keydown", this.handleInput, this);
+    this.escKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ESC
+    );
   }
 
   handleInput(event) {
@@ -65,6 +68,13 @@ class InputScene extends Phaser.Scene {
           this.currentInputIndex = 0;
         }, 200);
       }
+    }
+  }
+
+  update() {
+    if (this.escKey.isDown) {
+      this.scene.stop("InputScene");
+      this.scene.restart("StartScene");
     }
   }
 }

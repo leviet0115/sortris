@@ -14,6 +14,9 @@ class RecordScene extends Phaser.Scene {
     this.records = data.records;
     //console.log(this.records);
     //this.records = gameState.history[0];
+    this.escKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ESC
+    );
   }
 
   create() {
@@ -136,6 +139,12 @@ class RecordScene extends Phaser.Scene {
       this.spaceKeyIsPressed = true;
       this.scene.stop();
       this.scene.resume("GameScene", { isGameLost: true });
+    }
+
+    if (this.escKey.isDown) {
+      this.scene.stop("RecordScene");
+      this.scene.stop("GameScene");
+      this.scene.start("StartScene");
     }
 
     //reset flag

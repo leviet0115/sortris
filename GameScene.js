@@ -91,20 +91,6 @@ class GameScene extends Phaser.Scene {
       this.scene.restart();
     }
 
-    //handle game exit - back to menu
-    if (this.isGamePaused) {
-      if (this.cursors.space.isDown) {
-        this.scene.stop();
-        this.scene.start("StartScene");
-      }
-      if (this.esc.isDown) {
-        console.log("esc is down");
-        this.modalBg.destroy();
-        this.modalTitle.destroy();
-        this.scene.resume("GameScene");
-      }
-    }
-
     //keyboard controls
     if (this.cursors.left.isDown) {
       this.trash.x -= 10;
@@ -116,6 +102,9 @@ class GameScene extends Phaser.Scene {
       this.trash.y += 10;
     }
     if (this.esc.isDown) {
+      this.scene.stop("GameScene");
+      this.scene.start("StartScene");
+      /*
       this.physics.pause();
       this.isGamePaused = true;
 
@@ -128,7 +117,7 @@ class GameScene extends Phaser.Scene {
           fill: "#fff",
           fontSize: "24px",
         })
-        .setOrigin(0.5, 0.5);
+        .setOrigin(0.5, 0.5);*/
     }
 
     //losing game
