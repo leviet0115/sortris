@@ -22,37 +22,51 @@ class GameScene extends Phaser.Scene {
     this.currentRecord = {};
     this.cursors = this.input.keyboard.createCursorKeys();
     this.esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
+    this.selectedTrash = this.getRandomElement(gameState.trashes);
   }
 
   create() {
-    this.add.image(650, 60, "logo").setScale(0.5);
+    this.physics.world.setBounds(0, 0, 800, 600, true, true, true, true);
+    //let logo = this.add.image(650, 60, "logo").setScale(0.5);
+
+    //display live
+    this.liveText = this.add.text(30, 60, `Lives: ${this.lives}`, {
+      color: "#fff",
+      fontSize: "30px",
+    });
+
+    //display hint
+    this.hintContainer = this.add
+      .rectangle(650, 60, 200, 50, 0x000000)
+      .setStrokeStyle(2, 0x00ff00, 1);
+
+    this.hint = this.add
+      .text(650, 60, this.selectedTrash.key, { fill: "#0f0", fontSize: "20px" })
+      .setOrigin(0.5);
+
     //create trash
     const trashes = this.physics.add.group();
-    this.selectedTrash = this.getRandomElement(gameState.trashes);
     this.currentRecord["trash"] = this.selectedTrash;
-    this.trash = trashes.create(400, 0, this.selectedTrash.key).setScale(2);
-    this.currentRecord["createdAt"] = Date.now();
+    this.trash = this.spawnTrash(trashes, this.selectedTrash.key);
 
     //create bin
     const bins = this.physics.add.staticGroup();
     gameState.bins.forEach((bin, index) => {
       let binObject = bins.create(150 + 250 * index, 575, bin.key);
-      let binLabel = this.add
-        .text(binObject.x, binObject.y, binObject.texture.key, {
+      let binLabel = this.add.text(
+        binObject.x,
+        binObject.y,
+        binObject.texture.key,
+        {
           fill: "#black",
           fontSize: "16px",
-        })
-        .setOrigin(0.5, 0.5);
+        }
+      );
+      binLabel.setOrigin(0.5, 0.5);
     });
 
     //display score
     this.scoreText = this.add.text(30, 30, `Score: ${this.score}`, {
-      color: "#fff",
-      fontSize: "30px",
-    });
-
-    //display live
-    this.liveText = this.add.text(30, 60, `Lives: ${this.lives}`, {
       color: "#fff",
       fontSize: "30px",
     });
@@ -83,8 +97,7 @@ class GameScene extends Phaser.Scene {
         //create another trash
         this.selectedTrash = this.getRandomElement(gameState.trashes);
         this.currentRecord["trash"] = this.selectedTrash;
-        this.trash = trashes.create(400, 0, this.selectedTrash.key).setScale(2);
-        this.currentRecord["createdAt"] = Date.now();
+        this.trash = this.spawnTrash(trashes, this.selectedTrash.key);
       }
     });
   }
@@ -100,12 +113,15 @@ class GameScene extends Phaser.Scene {
     if (this.cursors.left.isDown) {
       this.trash.x -= 10;
     }
+
     if (this.cursors.right.isDown) {
       this.trash.x += 10;
     }
+
     if (this.cursors.down.isDown) {
       this.trash.y += 10;
     }
+
     if (this.esc.isDown) {
       this.scene.stop("GameScene");
       this.scene.start("StartScene");
@@ -145,5 +161,16 @@ class GameScene extends Phaser.Scene {
   getRandomElement(arr) {
     const randomI = Math.floor(Math.random() * arr.length);
     return arr[randomI];
+  }
+
+  spawnTrash(group, key) {
+    let trashObject = group
+      .create(400, 0, key)
+      .setScale(2)
+      .setCollideWorldBounds(true);
+    this.currentRecord["createdAt"] = Date.now();
+    trashObject.setSize(trashObject.width, trashObject.height).setOffset(0, 0);
+    this.hint.setText(key);
+    return trashObject;
   }
 }

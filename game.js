@@ -15,6 +15,7 @@ var config = {
     default: "arcade",
     arcade: {
       gravity: { y: 200 },
+      //  debug: true,
     },
   },
 };
@@ -23,16 +24,18 @@ const game = new Phaser.Game(config);
 
 const gameState = {};
 
-gameState.bin = [
+gameState.bins = [
   {
-    type: "organic",
-    color: "green",
+    key: "organic",
+    url: "./resources/bins/green-bin.png",
+    displayAs: "Organic",
   },
   {
-    type: "recyclable",
-    color: "orange",
+    key: "recyclable",
+    url: "./resources/bins/orange-bin.png",
+    displayAs: "Recyclable",
   },
-  { type: "other", color: "red" },
+  { key: "others", url: "./resources/bins/red-bin.png", displayAs: "Others" },
 ];
 
 gameState.scoring = {
