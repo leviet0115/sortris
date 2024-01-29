@@ -16,7 +16,6 @@ class GameScene extends Phaser.Scene {
   init(data) {
     this.records = [];
     this.isGameLost = data.isGameLost || false;
-    this.isGamePaused = false;
     this.score = 0;
     this.lives = 3;
     this.currentRecord = {};
@@ -45,25 +44,18 @@ class GameScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     //create trash
-    const trashes = this.physics.add.group();
+    this.trashGroup = this.physics.add.group();
     this.currentRecord["trash"] = this.selectedTrash;
-    this.trash = this.spawnTrash(trashes, this.selectedTrash.key);
+    this.trash = this.spawnTrash(this.selectedTrash.key);
 
     //create bin
-    const bins = this.physics.add.staticGroup();
+    this.binGroup = this.physics.add.staticGroup();
+    this.binObjects = [];
     gameState.bins.forEach((bin, index) => {
-      let binObject = bins.create(150 + 250 * index, 575, bin.key);
-      let binLabel = this.add.text(
-        binObject.x,
-        binObject.y,
-        binObject.texture.key,
-        {
-          fill: "#black",
-          fontSize: "16px",
-        }
-      );
-      binLabel.setOrigin(0.5, 0.5);
+      let binObject = this.spawnBin(150 + 250 * index, bin.key);
+      this.binObjects[bin.key] = binObject;
     });
+    console.log(this.binObjects);
 
     //display score
     this.scoreText = this.add.text(30, 30, `Score: ${this.score}`, {
@@ -72,34 +64,33 @@ class GameScene extends Phaser.Scene {
     });
 
     //sorting rules
-    this.physics.add.collider(trashes, bins, (trashObj, bin) => {
-      {
-        trashObj.destroy();
-        this.currentRecord["sortedAt"] = Date.now();
+    this.physics.add.collider(
+      this.trashGroup,
+      this.binGroup,
+      (trashObj, bin) => {
+        {
+          trashObj.destroy();
+          this.currentRecord["sortedAt"] = Date.now();
 
-        //right bin
-        if (bin.texture.key === this.selectedTrash.type) {
-          this.score += gameState.scoring.reward.amount;
-          this.scoreText.setText(`Score: ${this.score}`);
-        } /*wrong bin*/ else {
-          this.score += gameState.scoring.deduction.amount;
-          this.scoreText.setText(`Score: ${this.score}`);
-          this.lives -= 1;
-          //console.log("sorting rules: -1 live");
-          this.liveText.setText(`Lives: ${this.lives}`);
+          //right bin
+          if (bin.texture.key === this.selectedTrash.type) {
+            this.feedback(true, bin.texture.key);
+          } /*wrong bin*/ else {
+            this.feedback(false, bin.texture.key);
+          }
+          //save moves to record
+          this.currentRecord["sortedAs"] = bin.texture.key;
+          this.records.push(this.currentRecord);
+          this.currentRecord = {};
+          //console.log(this.records, "isPause:" + this.isGameLost);
+
+          //create another trash
+          this.selectedTrash = this.getRandomElement(gameState.trashes);
+          this.currentRecord["trash"] = this.selectedTrash;
+          this.trash = this.spawnTrash(this.selectedTrash.key);
         }
-        //save moves to record
-        this.currentRecord["sortedAs"] = bin.texture.key;
-        this.records.push(this.currentRecord);
-        this.currentRecord = {};
-        //console.log(this.records, "isPause:" + this.isGameLost);
-
-        //create another trash
-        this.selectedTrash = this.getRandomElement(gameState.trashes);
-        this.currentRecord["trash"] = this.selectedTrash;
-        this.trash = this.spawnTrash(trashes, this.selectedTrash.key);
       }
-    });
+    );
   }
 
   update() {
@@ -163,8 +154,8 @@ class GameScene extends Phaser.Scene {
     return arr[randomI];
   }
 
-  spawnTrash(group, key) {
-    let trashObject = group
+  spawnTrash(key) {
+    let trashObject = this.trashGroup
       .create(400, 0, key)
       .setScale(2)
       .setCollideWorldBounds(true);
@@ -172,5 +163,33 @@ class GameScene extends Phaser.Scene {
     trashObject.setSize(trashObject.width, trashObject.height).setOffset(0, 0);
     this.hint.setText(key);
     return trashObject;
+  }
+
+  spawnBin(x, key) {
+    let binObject = this.binGroup.create(x, 575, key);
+    let binLabel = this.add
+      .text(binObject.x, binObject.y, key, {
+        fill: "#black",
+        fontSize: "16px",
+      })
+      .setOrigin(0.5, 0.5);
+    let binOutline = this.add
+      .rectangle(binObject.x, binObject.y, binObject.width, binObject.height)
+      .setStrokeStyle(4, 0x00ff00, 1)
+      .setVisible(false);
+    return { binObject, binLabel, binOutline };
+  }
+
+  feedback(isCorrect, key) {
+    this.score += isCorrect
+      ? gameState.scoring.reward.amount
+      : gameState.scoring.deduction.amount;
+    this.live -= isCorrect ? 0 : 1;
+    !isCorrect && this.liveText.setText(`Lives: ${this.lives}`);
+    this.scoreText.setText(`Score: ${this.score}`);
+    let binOutline = this.binObjects[key].binOutline;
+    let outlineColor = isCorrect ? 0x00ff00 : 0xff0000;
+    binOutline.setStrokeStyle(5, outlineColor, 1).setVisible(true);
+    setTimeout(() => binOutline.setVisible(false), 400);
   }
 }
