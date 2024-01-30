@@ -184,7 +184,7 @@ class GameScene extends Phaser.Scene {
     this.score += isCorrect
       ? gameState.scoring.reward.amount
       : gameState.scoring.deduction.amount;
-    this.live -= isCorrect ? 0 : 1;
+    this.lives -= isCorrect ? 0 : 1;
     !isCorrect && this.liveText.setText(`Lives: ${this.lives}`);
     this.scoreText.setText(`Score: ${this.score}`);
     let binOutline = this.binObjects[key].binOutline;
