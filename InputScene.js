@@ -73,8 +73,7 @@ class InputScene extends Phaser.Scene {
 
   update() {
     if (this.escKey.isDown) {
-      this.scene.stop("InputScene");
-      this.scene.restart("StartScene");
+      this.scene.start("StartScene");
     }
   }
 }
