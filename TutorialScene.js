@@ -1,6 +1,9 @@
 class TutorialScene extends Phaser.Scene {
   constructor() {
     super({ key: "TutorialScene" });
+  }
+
+  init() {
     this.title = "How to play";
     this.goal = "Goal: put trash to the right bin";
     this.keyDescription = [
@@ -12,18 +15,21 @@ class TutorialScene extends Phaser.Scene {
   }
 
   create() {
-    this.background = this.add
+    //add container
+    this.add
       .rectangle(400, 300, 500, 400, 0x000000)
       .setStrokeStyle(2, 0x00ff00, 1);
 
-    const titleText = this.add
+    //add title
+    this.add
       .text(400, 220, this.title, {
         fill: "#fff",
         fontSize: "32px",
       })
       .setOrigin(0.5);
 
-    const goalText = this.add
+    //add goal description
+    let goalText = this.add
       .text(400, 260, this.goal, {
         fill: "#fff",
         fontSize: "16px",
@@ -31,6 +37,7 @@ class TutorialScene extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
+    //add key name columns
     this.keyDescription.forEach((item, index) => {
       let keyText = this.add.text(
         230,
@@ -42,7 +49,8 @@ class TutorialScene extends Phaser.Scene {
         }
       );
 
-      let descriptionText = this.add
+      //add key use column
+      this.add
         .text(300, keyText.y, item.description, {
           fill: "white",
           fontSize: "16px",
@@ -50,12 +58,14 @@ class TutorialScene extends Phaser.Scene {
         .setOrigin(0);
     });
 
+    //add escape key
     this.escKey = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.ESC
     );
   }
 
   update() {
+    //back to main menu when esc is pressed
     if (this.escKey.isDown) {
       this.scene.stop("TutorialScene");
       this.scene.resume("StartScene");

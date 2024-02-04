@@ -44,7 +44,7 @@ gameState.scoring = {
     amount: 50,
   },
   deduction: {
-    description: "Deduction per incorrect answer",
+    description: "Deduction per wrong answer",
     amount: -25,
   },
 };

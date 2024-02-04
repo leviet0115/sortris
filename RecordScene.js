@@ -3,19 +3,18 @@ class RecordScene extends Phaser.Scene {
     super({ key: "RecordScene" });
   }
 
-  preload() {
-    const trashFolder = "./resources/trashes/";
-    gameState.history[0].forEach((record) =>
-      this.load.image(record.trash.key, trashFolder + record.trash.img)
-    );
-  }
-
   init(data) {
     this.records = data.records;
-    //console.log(this.records);
-    //this.records = gameState.history[0];
-    this.escKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.ESC
+    //paging
+    this.pages = [];
+    this.currentPage = 0;
+    this.maxPageLength = 6;
+  }
+
+  preload() {
+    const trashFolder = "./resources/trashes/";
+    this.records.forEach((record) =>
+      this.load.image(record.trash.key, trashFolder + record.trash.img)
     );
   }
 
@@ -25,12 +24,6 @@ class RecordScene extends Phaser.Scene {
       .setStrokeStyle(2, 0x00ff00, 1);
 
     const textStyle = { font: "16px Arial" };
-    //const records = gameState.history[0];
-
-    //paging
-    this.pages = [];
-    this.currentPage = 0;
-    this.maxPageLength = 6;
 
     let totalScore = 0;
 
@@ -43,8 +36,6 @@ class RecordScene extends Phaser.Scene {
       let dotsDividers = [];
 
       page.forEach((record, index) => {
-        //console.log(page);
-        // add trash image to the left
         let trash = this.add.image(220, 220 + 32 * index, record.trash.key);
         trashImages.push(trash);
 
@@ -56,23 +47,25 @@ class RecordScene extends Phaser.Scene {
 
         totalScore += Number(score);
 
-        let fill = score > 0 ? "#0f0" : "#B0B0B0";
+        let recordStyle = {
+          ...textStyle,
+          fill: score > 0 ? "#0f0" : "#B0B0B0",
+        };
 
         // add correct category next to trash
         let cat = this.add
-          .text(trash.x + trash.width, trash.y, `(${record.trash.type})`, {
-            ...textStyle,
-            fill,
-          })
+          .text(
+            trash.x + trash.width,
+            trash.y,
+            `is ${record.trash.type}`,
+            recordStyle
+          )
           .setOrigin(0, 0.5);
         catTexts.push(cat);
 
         // add score to the right
         let scoreText = this.add
-          .text(background.width, trash.y, score, {
-            ...textStyle,
-            fill,
-          })
+          .text(background.width, trash.y, score, recordStyle)
           .setOrigin(0, 0.5);
         scoreText.setX(650 - scoreText.width - 70);
         scoreTexts.push(scoreText);
@@ -98,47 +91,48 @@ class RecordScene extends Phaser.Scene {
       return totalTime + (record.sortedAt - record.createdAt) / 1000;
     }, 0);
 
-    let totalScoreText = this.add.text(
-      200,
-      150,
-      `You practiced waste sorting for ${playTime.toFixed(
-        2
-      )} seconds \nand earned ${totalScore} points.`,
-      textStyle
-    );
+    //display summary
+    let summary = `You practiced waste sorting for ${playTime.toFixed(
+      2
+    )} seconds \nand earned ${totalScore} points.`;
+    this.add.text(200, 150, summary, textStyle);
 
-    this.add.text(200, 450, `Press space to restart`);
+    //display guide
+    let guide = `Press space to restart`;
+    this.add.text(200, 450, guide);
 
-    this.pageNumber = this.add.text(
-      background.width,
-      450,
-      `\u2190 Page ${this.currentPage + 1}/${this.pages.length} \u2192`
-    );
+    //display page number
+    this.pageNumber = `\u2190 Page ${this.currentPage + 1}/${
+      this.pages.length
+    } \u2192`;
+    this.footer = this.add.text(background.width, 450, this.pageNumber);
 
-    //display only currentPage
-    this.changePage(0);
+    //display current page only
+    this.changePage(this.currentPage);
 
+    //add key object
     this.cursors = this.input.keyboard.createCursorKeys();
+    this.escKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.ESC
+    );
   }
 
   update() {
     //handle right click +1 page
     if (this.cursors.right.isDown && !this.rightKeyIsPressed) {
       this.rightKeyIsPressed = true;
-      //console.log("right is pressed");
       this.changePage(1);
     }
 
     if (this.cursors.left.isDown && !this.leftKeyIsPressed) {
       this.leftKeyIsPressed = true;
-      //console.log("left is pressed");
       this.changePage(-1);
     }
 
     if (this.cursors.space.isDown && !this.spaceKeyIsPressed) {
       this.spaceKeyIsPressed = true;
       this.scene.stop();
-      this.scene.resume("GameScene", { isGameLost: true });
+      this.scene.resume("GameScene");
     }
 
     if (this.escKey.isDown) {
@@ -163,12 +157,9 @@ class RecordScene extends Phaser.Scene {
 
   setPageVisibility(page, visibility) {
     Object.values(page).forEach((pageTexts) => {
-      //(2, pageTexts);
       pageTexts.forEach((text) => {
-        //console.log(3, text);
         text.setVisible(visibility);
       });
-      //console.log("4, set all ", visibility);
     });
   }
 
@@ -179,13 +170,11 @@ class RecordScene extends Phaser.Scene {
       0,
       this.pages.length - 1
     );
-    this.pageNumber.setText(
-      `\u2190 Page ${this.currentPage + 1}/${this.pages.length} \u2192`
-    );
+
+    this.footer.setText(this.pageNumber);
+
     this.pages.forEach((page, index) => {
-      // console.log(1, page);
       let pageVisibility = index === this.currentPage ? true : false;
-      //console.log(index, this.currentPage, pageVisibility);
       this.setPageVisibility(page, pageVisibility);
     });
   }

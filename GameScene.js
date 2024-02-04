@@ -3,44 +3,41 @@ class GameScene extends Phaser.Scene {
     super({ key: "GameScene" });
   }
 
+  init() {
+    this.records = [];
+    this.isLost = false;
+    this.score = 0;
+    this.lives = 3;
+    this.currentRecord = {};
+    this.selectedTrash = this.getRandomElement(gameState.trashes);
+  }
+
   preload() {
-    const trashFolder = "./resources/trashes/";
+    //load image for trash objects
+    let trashFolder = "./resources/trashes/";
     for (let obj of gameState.trashes) {
       this.load.image(obj.key, trashFolder + obj.img);
     }
 
-    console.log(gameState.bins);
+    //load image for bins
     gameState.bins.forEach((bin) => this.load.image(bin.key, bin.url));
-  }
-
-  init(data) {
-    this.records = [];
-    this.isGameLost = data.isGameLost || false;
-    this.score = 0;
-    this.lives = 3;
-    this.currentRecord = {};
-    this.cursors = this.input.keyboard.createCursorKeys();
-    this.esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
-    this.selectedTrash = this.getRandomElement(gameState.trashes);
   }
 
   create() {
     this.physics.world.setBounds(0, 0, 800, 600, true, true, true, true);
-    //let logo = this.add.image(650, 60, "logo").setScale(0.5);
 
     //display live
-    this.liveText = this.add.text(30, 60, `Lives: ${this.lives}`, {
-      color: "#fff",
-      fontSize: "30px",
-    });
+    let liveStyle = { color: "#fff", fontSize: "30px" };
+    this.liveText = this.add.text(30, 60, `Lives: ${this.lives}`, liveStyle);
 
     //display hint
     this.hintContainer = this.add
       .rectangle(650, 60, 200, 50, 0x000000)
       .setStrokeStyle(2, 0x00ff00, 1);
 
+    let hintStyle = { fill: "#0f0", fontSize: "20px" };
     this.hint = this.add
-      .text(650, 60, this.selectedTrash.key, { fill: "#0f0", fontSize: "20px" })
+      .text(650, 60, this.selectedTrash.key, hintStyle)
       .setOrigin(0.5);
 
     //create trash
@@ -68,34 +65,22 @@ class GameScene extends Phaser.Scene {
       this.trashGroup,
       this.binGroup,
       (trashObj, bin) => {
-        {
-          trashObj.destroy();
-          this.currentRecord["sortedAt"] = Date.now();
-
-          //right bin
-          if (bin.texture.key === this.selectedTrash.type) {
-            this.feedback(true, bin.texture.key);
-          } /*wrong bin*/ else {
-            this.feedback(false, bin.texture.key);
-          }
-          //save moves to record
-          this.currentRecord["sortedAs"] = bin.texture.key;
-          this.records.push(this.currentRecord);
-          this.currentRecord = {};
-          //console.log(this.records, "isPause:" + this.isGameLost);
-
-          //create another trash
-          this.selectedTrash = this.getRandomElement(gameState.trashes);
-          this.currentRecord["trash"] = this.selectedTrash;
-          this.trash = this.spawnTrash(this.selectedTrash.key);
-        }
+        trashObj.destroy();
+        this.assessAndSave(bin.texture.key);
+        this.selectedTrash = this.getRandomElement(gameState.trashes);
+        this.currentRecord["trash"] = this.selectedTrash;
+        this.trash = this.spawnTrash(this.selectedTrash.key);
       }
     );
+
+    //add key object
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.esc = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
   }
 
   update() {
-    //handle gameLost
-    if (this.isGameLost) {
+    //handle restart
+    if (this.isLost) {
       this.lives = 3;
       this.scene.restart();
     }
@@ -116,35 +101,14 @@ class GameScene extends Phaser.Scene {
     if (this.esc.isDown) {
       this.scene.stop("GameScene");
       this.scene.start("StartScene");
-      /*
-      this.physics.pause();
-      this.isGamePaused = true;
-
-      this.modalBg = this.add
-        .rectangle(400, 300, 400, 300, 0x000000)
-        .setStrokeStyle(2, 0x00ff00, 1);
-
-      this.modalTitle = this.add
-        .text(400, 300, "Press space again to quit", {
-          fill: "#fff",
-          fontSize: "24px",
-        })
-        .setOrigin(0.5, 0.5);*/
     }
 
     //losing game
     if (this.lives === 0) {
-      //console.log("looping losing game");
+      this.isLost = true;
       this.physics.pause();
-      this.isGameLost = true;
       this.scene.pause();
       this.scene.launch("RecordScene", { records: this.records });
-      //console.log("losing game logic pauses the game");
-      /*this.add.text(50, 250, `Game over\nPress space to restart`, {
-        color: "#fff",
-        fontSize: "24px",
-      });*/
-      console.log(this.records);
       gameState.history.push(this.records);
     }
   }
@@ -191,5 +155,20 @@ class GameScene extends Phaser.Scene {
     let outlineColor = isCorrect ? 0x00ff00 : 0xff0000;
     binOutline.setStrokeStyle(5, outlineColor, 1).setVisible(true);
     setTimeout(() => binOutline.setVisible(false), 400);
+  }
+
+  assessAndSave(sortedType) {
+    //save the move
+    this.currentRecord["sortedAt"] = Date.now();
+    this.currentRecord["sortedAs"] = sortedType;
+    this.records.push(this.currentRecord);
+    this.currentRecord = {};
+
+    //assess the move
+    if (sortedType === this.selectedTrash.type) {
+      this.feedback(true, sortedType);
+    } else {
+      this.feedback(false, sortedType);
+    }
   }
 }

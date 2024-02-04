@@ -122,10 +122,6 @@ class ConfigScene extends Phaser.Scene {
     console.log(logicKey, amount, this.isInputValid(logicKey, amount));
     if (this.isInputValid(logicKey, amount)) {
       gameState.scoring[logicKey].amount = amount;
-      let logic = gameState.scoring[logicKey];
-      this.configItems[this.selectedItemIndex].setText(
-        `${logic.description}: ${logic.amount}`
-      );
       this.consoleInput.value = "";
     } else {
       let error = this.add
@@ -135,5 +131,9 @@ class ConfigScene extends Phaser.Scene {
       setTimeout(() => error.destroy(), 800);
       this.consoleInput.value = "";
     }
+    let logic = gameState.scoring[logicKey];
+    this.configItems[this.selectedItemIndex].setText(
+      `${logic.description}: ${logic.amount}`
+    );
   }
 }

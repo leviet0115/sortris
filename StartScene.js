@@ -8,14 +8,15 @@ class StartScene extends Phaser.Scene {
   }
 
   init() {
-    this.menuItems = ["Start Game", "How to play", "Admin config"];
+    this.menuItems = ["Start Game", "How to play", "Configuration"];
     this.selectedItemIndex = 0;
     this.menuTexts = [];
   }
 
   create() {
-    // Display menu items
     this.logo = this.add.image(400, 200, "logo");
+
+    //add menu items
     this.menuItems.forEach((item, index) => {
       const text = this.add
         .text(400, this.logo.y + 100 + index * 40, item, {
@@ -32,6 +33,7 @@ class StartScene extends Phaser.Scene {
       this.menuTexts.push(text);
     });
 
+    //add footer
     this.add
       .text(
         400,
@@ -41,6 +43,7 @@ class StartScene extends Phaser.Scene {
       )
       .setOrigin(0.5);
 
+    //add cursor object for
     this.cursors = this.input.keyboard.createCursorKeys();
   }
 
@@ -49,7 +52,7 @@ class StartScene extends Phaser.Scene {
     if (this.cursors.down.isDown && !this.downKeyIsPressed) {
       this.selectedItemIndex =
         (this.selectedItemIndex + 1) % this.menuItems.length;
-      console.log("pressing down", this.selectedItemIndex);
+      //console.log("pressing down", this.selectedItemIndex);
       this.downKeyIsPressed = true;
       this.updateMenu();
     }
@@ -59,7 +62,7 @@ class StartScene extends Phaser.Scene {
       this.selectedItemIndex =
         (this.selectedItemIndex - 1 + this.menuItems.length) %
         this.menuItems.length;
-      console.log("pressing up", this.selectedItemIndex);
+      //console.log("pressing up", this.selectedItemIndex);
       this.upKeyIsPressed = true;
       this.updateMenu();
     }
