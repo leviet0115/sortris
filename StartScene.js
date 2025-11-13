@@ -3,14 +3,26 @@ class StartScene extends Phaser.Scene {
     super({ key: "StartScene" });
   }
 
-  preload() {
-    this.load.image("logo", "./resources/logo.png");
-  }
-
   init() {
-    this.menuItems = ["Start Game", "How to play", "Configuration"];
+    this.menuItems = [
+      { desc: "Start Game", sceneKey: "GameScene", isOverlayed: false },
+      {
+        desc: "How to play",
+        sceneKey: "TutorialScene",
+        isOverlayed: true,
+      },
+      {
+        desc: "Configuration",
+        sceneKey: "InputScene",
+        isOverlayed: false,
+      },
+    ];
     this.selectedItemIndex = 0;
     this.menuTexts = [];
+  }
+
+  preload() {
+    this.load.image("logo", "./resources/logo.png");
   }
 
   create() {
@@ -19,7 +31,7 @@ class StartScene extends Phaser.Scene {
     //add menu items
     this.menuItems.forEach((item, index) => {
       const text = this.add
-        .text(400, this.logo.y + 100 + index * 40, item, {
+        .text(400, this.logo.y + 100 + index * 40, item.desc, {
           fontSize: "24px",
           fill: index === this.selectedItemIndex ? "#0f0" : "#fff",
           padding: {
@@ -50,31 +62,33 @@ class StartScene extends Phaser.Scene {
   update() {
     //if press down, the cursor move to a lower option
     if (this.cursors.down.isDown && !this.downKeyIsPressed) {
+      this.downKeyIsPressed = true;
       this.selectedItemIndex =
         (this.selectedItemIndex + 1) % this.menuItems.length;
       //console.log("pressing down", this.selectedItemIndex);
-      this.downKeyIsPressed = true;
       this.updateMenu();
     }
 
     //if press up, the cursor move to an upper option
     if (this.cursors.up.isDown && !this.upKeyIsPressed) {
+      this.upKeyIsPressed = true;
       this.selectedItemIndex =
         (this.selectedItemIndex - 1 + this.menuItems.length) %
         this.menuItems.length;
       //console.log("pressing up", this.selectedItemIndex);
-      this.upKeyIsPressed = true;
       this.updateMenu();
     }
 
     //if press space, trigger the relevant event
     if (this.cursors.space.isDown && !this.spaceKeyIsPressed) {
       this.spaceKeyIsPressed = true;
-      this.selectedItemIndex === 0 && this.scene.start("GameScene");
-      this.selectedItemIndex === 1 &&
-        this.scene.pause("StartScene") &&
-        this.scene.launch("TutorialScene");
-      this.selectedItemIndex === 2 && this.scene.start("InputScene");
+      let selectedItem = this.menuItems[this.selectedItemIndex];
+      if (selectedItem.isOverlayed === true) {
+        this.scene.pause("StartScene");
+        this.scene.launch(selectedItem.sceneKey);
+      } else {
+        this.scene.start(selectedItem.sceneKey);
+      }
     }
 
     //reset press flags
@@ -98,3 +112,16 @@ class StartScene extends Phaser.Scene {
     });
   }
 }
+
+/* 
+used Phaser 3 methods
+  this.load.image
+  this.add.image
+  this.add.text
+  this.input.keyboard.createCursorKeys()
+
+used Phaser 3 objects
+  image 
+  text
+  cursorKeys  
+  */

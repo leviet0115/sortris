@@ -45,7 +45,7 @@ class ConfigScene extends Phaser.Scene {
       );
 
     document.getElementById("submitBtn").addEventListener("click", () => {
-      console.log(this.consoleInput.value);
+      //console.log(this.consoleInput.value);
       this.consoleDiv.style.display = "none";
       this.validatedUpdate(
         this.selectedItemIndex === 0 ? "reward" : "deduction",
@@ -119,10 +119,15 @@ class ConfigScene extends Phaser.Scene {
 
   validatedUpdate(logicKey, input) {
     let amount = Number(input);
-    console.log(logicKey, amount, this.isInputValid(logicKey, amount));
+    // console.log(logicKey, amount, this.isInputValid(logicKey, amount));
     if (this.isInputValid(logicKey, amount)) {
-      gameState.scoring[logicKey].amount = amount;
+      let scoringLogic = gameState.scoring[logicKey];
+      scoringLogic.amount = amount;
       this.consoleInput.value = "";
+
+      this.configItems[this.selectedItemIndex].setText(
+        `${scoringLogic.description}: ${scoringLogic.amount}`
+      );
     } else {
       let error = this.add
         .text(400, 550, "Invalid input!", { fill: "red", fontSize: "20px" })
@@ -131,9 +136,5 @@ class ConfigScene extends Phaser.Scene {
       setTimeout(() => error.destroy(), 800);
       this.consoleInput.value = "";
     }
-    let logic = gameState.scoring[logicKey];
-    this.configItems[this.selectedItemIndex].setText(
-      `${logic.description}: ${logic.amount}`
-    );
   }
 }
