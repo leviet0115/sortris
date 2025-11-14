@@ -15,6 +15,7 @@ class GameScene extends Phaser.Scene {
   preload() {
     //load image for trash objects
     let trashFolder = "./resources/trashes/";
+
     for (let obj of gameState.trashes) {
       this.load.image(obj.key, trashFolder + obj.img);
     }
@@ -38,21 +39,20 @@ class GameScene extends Phaser.Scene {
     let hintStyle = { fill: "#0f0", fontSize: "20px" };
     this.hint = this.add
       .text(650, 60, this.selectedTrash.key, hintStyle)
-      .setOrigin(0.5);
+      .setOrigin(0.5, 0.5);
 
     //create trash
     this.trashGroup = this.physics.add.group();
-    this.currentRecord["trash"] = this.selectedTrash;
-    this.trash = this.spawnTrash(this.selectedTrash.key);
+    this.trash = this.spawnTrash(this.selectedTrash);
 
-    //create bin
+    //create bins and bin outlines
     this.binGroup = this.physics.add.staticGroup();
-    this.binObjects = [];
+    this.binOutlines = [];
     gameState.bins.forEach((bin, index) => {
-      let binObject = this.spawnBin(150 + 250 * index, bin.key);
-      this.binObjects[bin.key] = binObject;
+      let binOutline = this.spawnBin(150 + 250 * index, 575, bin.key);
+      this.binOutlines[bin.key] = binOutline;
     });
-    console.log(this.binObjects);
+    console.log(this.binOutlines);
 
     //display score
     this.scoreText = this.add.text(30, 30, `Score: ${this.score}`, {
@@ -68,8 +68,7 @@ class GameScene extends Phaser.Scene {
         trashObj.destroy();
         this.assessAndSave(bin.texture.key);
         this.selectedTrash = this.getRandomElement(gameState.trashes);
-        this.currentRecord["trash"] = this.selectedTrash;
-        this.trash = this.spawnTrash(this.selectedTrash.key);
+        this.trash = this.spawnTrash(this.selectedTrash);
       }
     );
 
@@ -108,8 +107,8 @@ class GameScene extends Phaser.Scene {
       this.isLost = true;
       this.physics.pause();
       this.scene.pause();
-      this.scene.launch("RecordScene", { records: this.records });
       gameState.history.push(this.records);
+      this.scene.launch("RecordScene", { records: this.records });
     }
   }
 
@@ -118,20 +117,22 @@ class GameScene extends Phaser.Scene {
     return arr[randomI];
   }
 
-  spawnTrash(key) {
+  spawnTrash(trash) {
     let trashObject = this.trashGroup
-      .create(400, 0, key)
+      .create(400, 0, trash.key)
       .setScale(2)
+      .setSize(this.width, this.height)
+      .setOffset(0, 0)
       .setCollideWorldBounds(true);
     this.currentRecord["createdAt"] = Date.now();
-    trashObject.setSize(trashObject.width, trashObject.height).setOffset(0, 0);
-    this.hint.setText(key);
+    this.currentRecord["trash"] = trash;
+    this.hint.setText(trash.key);
     return trashObject;
   }
 
-  spawnBin(x, key) {
-    let binObject = this.binGroup.create(x, 575, key);
-    let binLabel = this.add
+  spawnBin(x, y, key) {
+    let binObject = this.binGroup.create(x, y, key);
+    this.add
       .text(binObject.x, binObject.y, key, {
         fill: "#black",
         fontSize: "16px",
@@ -141,7 +142,7 @@ class GameScene extends Phaser.Scene {
       .rectangle(binObject.x, binObject.y, binObject.width, binObject.height)
       .setStrokeStyle(4, 0x00ff00, 1)
       .setVisible(false);
-    return { binObject, binLabel, binOutline };
+    return binOutline;
   }
 
   feedback(isCorrect, key) {
@@ -151,7 +152,7 @@ class GameScene extends Phaser.Scene {
     this.lives -= isCorrect ? 0 : 1;
     !isCorrect && this.liveText.setText(`Lives: ${this.lives}`);
     this.scoreText.setText(`Score: ${this.score}`);
-    let binOutline = this.binObjects[key].binOutline;
+    let binOutline = this.binOutlines[key];
     let outlineColor = isCorrect ? 0x00ff00 : 0xff0000;
     binOutline.setStrokeStyle(5, outlineColor, 1).setVisible(true);
     setTimeout(() => binOutline.setVisible(false), 400);
@@ -165,10 +166,6 @@ class GameScene extends Phaser.Scene {
     this.currentRecord = {};
 
     //assess the move
-    if (sortedType === this.selectedTrash.type) {
-      this.feedback(true, sortedType);
-    } else {
-      this.feedback(false, sortedType);
-    }
+    this.feedback(sortedType === this.selectedTrash.type, sortedType);
   }
 }

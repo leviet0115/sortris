@@ -52,8 +52,8 @@ class InputScene extends Phaser.Scene {
 
     //handle delete number
     if (event.keyCode === 8) {
-      this.inputTexts[this.currentInputIndex - 1].setText("_");
       this.currentInputIndex -= 1;
+      this.inputTexts[this.currentInputIndex].setText("_");
     }
 
     //hanlde return pin code

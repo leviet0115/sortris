@@ -72,6 +72,8 @@ class RecordScene extends Phaser.Scene {
 
         //filling dots between image and text
         let lastLeft = cat;
+        //
+        //
         let numberOfDots = (scoreText.x - lastLeft.x - lastLeft.width) / 9 - 4;
         let dots = "";
         for (let i = 0; i < numberOfDots; i++) {
@@ -171,7 +173,9 @@ class RecordScene extends Phaser.Scene {
       this.pages.length - 1
     );
 
-    this.footer.setText(this.pageNumber);
+    this.footer.setText(
+      `\u2190 Page ${this.currentPage + 1}/${this.pages.length} \u2192`
+    );
 
     this.pages.forEach((page, index) => {
       let pageVisibility = index === this.currentPage ? true : false;
