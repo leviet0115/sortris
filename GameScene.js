@@ -22,6 +22,10 @@ class GameScene extends Phaser.Scene {
 
     //load image for bins
     gameState.bins.forEach((bin) => this.load.image(bin.key, bin.url));
+
+    //load sound effects
+    this.load.audio("correct", "./resources/sfx/correct.wav");
+    this.load.audio("wrong", "./resources/sfx/wrong.mp3");
   }
 
   create() {
@@ -155,6 +159,7 @@ class GameScene extends Phaser.Scene {
     let binOutline = this.binOutlines[key];
     let outlineColor = isCorrect ? 0x00ff00 : 0xff0000;
     binOutline.setStrokeStyle(5, outlineColor, 1).setVisible(true);
+    this.sound.play(isCorrect ? "correct" : "wrong");
     setTimeout(() => binOutline.setVisible(false), 400);
   }
 
