@@ -30,6 +30,7 @@ class GameScene extends Phaser.Scene {
 
   create() {
     this.physics.world.setBounds(0, 0, 800, 600, true, true, true, true);
+    this.sound.unlock();
 
     //display live
     let liveStyle = { color: "#fff", fontSize: "30px" };
